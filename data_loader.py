@@ -109,4 +109,4 @@ def load_new_data(token):
         the_date = the_date + timedelta(days=INTERVAL_LENGTH_IN_DAYS)
 
 
-load_new_data(get_token())
+# load_new_data(get_token())
