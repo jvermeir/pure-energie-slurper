@@ -77,3 +77,7 @@ def graph_by_day(year, month, day):
     plt.ylabel('kWh')
     plt.legend(plt.gca().lines, ['total', 'redelivery', 'net'])
     plt.show()
+
+
+def graph(start_date, end_date, aggregation_level):
+    print('TODO: implement graph')
