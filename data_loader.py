@@ -1,9 +1,10 @@
-from datetime import datetime, timedelta
 import json
-from pathlib import Path
+import os
+from datetime import datetime, timedelta
 
 import requests
-import os
+
+import properties
 
 INTERVAL_LENGTH_IN_DAYS = 14
 DATA_ROOT_FOLDER = './data/'
@@ -13,7 +14,6 @@ YESTERDAY = TODAY - timedelta(days=1)
 
 
 def get_token():
-    email, password, connection_id, access_token = get_properties()
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:126.0) Gecko/20100101 Firefox/126.0',
         'Accept': 'application/json',
@@ -31,7 +31,7 @@ def get_token():
         'Priority': 'u=1',
         'TE': 'trailers'
     }
-    credentials = json.dumps({"email": email, "password": password})
+    credentials = json.dumps({"email": properties.email, "password": properties.password})
     login_response = requests.post('https://dmp.pure-energie.nl/api/auth/login', data=credentials,
                                    headers=headers)
 
@@ -39,23 +39,14 @@ def get_token():
     return data['access_token']
 
 
-def get_properties():
-    properties_file = Path.home() / Path("properties.json")
-    with open(properties_file, 'r') as file:
-        properties_as_text = file.readline()
-        properties = json.loads(properties_as_text)
-        return properties['email'], properties['password'], properties['connection_id'], properties['access_token']
-
-
 def get_data_for_period(start_date, end_date, token):
-    email, password, connection_id, access_token = get_properties()
     get_headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:126.0) Gecko/20100101 Firefox/126.0',
         'Accept': 'application/json',
         'Accept-Language': 'en-US,en;q=0.5',
         'Accept-Encoding': 'gzip, deflate, br, zstd',
         'Referer': 'https://pure-energie.nl/',
-        'X-Token': access_token,
+        'X-Token': properties.access_token,
         'Origin': 'https://pure-energie.nl',
         'Sec-Fetch-Dest': 'empty',
         'Sec-Fetch-Mode': 'cors',
@@ -68,7 +59,7 @@ def get_data_for_period(start_date, end_date, token):
     }
 
     response = requests.get(
-        f'https://dmp.pure-energie.nl/api/klantportaal/{connection_id}/consumption/download?period=hours&start_date={start_date}&end_date={end_date}',
+        f'https://dmp.pure-energie.nl/api/klantportaal/{properties.connection_id}/consumption/download?period=hours&start_date={start_date}&end_date={end_date}',
         headers=get_headers)
     return json.loads(response.text)['content']
 
@@ -107,6 +98,3 @@ def load_new_data(token):
         data = get_data_for_period(the_date, end_date, token)
         write_data_to_file(the_date, data)
         the_date = the_date + timedelta(days=INTERVAL_LENGTH_IN_DAYS)
-
-
-# load_new_data(get_token())
