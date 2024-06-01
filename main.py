@@ -5,8 +5,9 @@ import graph
 
 
 def handle_graph_command(start_date, end_date, aggregation):
-    print(f'Received graph command with parameters: start_date = {start_date}, end_date = {end_date}, aggregation level = {aggregation}')
-    graph.graph(start_date, end_date, aggregation)
+    print(
+        f'Received graph command with parameters: start_date = {start_date}, end_date = {end_date}, aggregation level = {aggregation}')
+    graph.graph(start_date=start_date, end_date=end_date, aggregation_level=aggregation)
 
 
 def handle_load_command(start_date, end_date):
@@ -46,8 +47,8 @@ print_graph_parser.add_argument('--end_date',
                                 )
 print_graph_parser.add_argument('--aggregation',
                                 dest='aggregation',
-                                choices=['year', 'month', 'day', 'hour'],
-                                help='The aggreation level of the graph',
+                                choices=graph.AGGREGATION_LEVELS,
+                                help='The aggregation level of the graph',
                                 required=True
                                 )
 
@@ -60,7 +61,6 @@ elif command.subcommand == 'load':
     handle_load_command(command.start_date, command.end_date)
 else:
     handle_update_command()
-
 
 # functions:
 # -  load new data

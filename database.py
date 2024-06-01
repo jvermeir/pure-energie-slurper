@@ -1,7 +1,8 @@
 import sqlite3
 import locale
 import re
-from datetime import datetime
+from calendar import calendar
+from datetime import datetime, timedelta
 import os
 from pathlib import Path
 
@@ -88,11 +89,9 @@ def load_datafiles():
                     update_row(record)
 
 
-def get_total_by_year(year = None):
+def get_total_by_year(start_year, end_year):
     result = []
-    where_clause = ''
-    if year is not None:
-        where_clause = f'''where year = {year}'''
+    where_clause = f'''where year between {start_year} and {end_year}'''
     with sqlite3.connect(DATABASE_FILE) as conn:
         cur = conn.cursor()
         cur.execute(f'''
@@ -111,11 +110,16 @@ def get_total_by_year(year = None):
     return result
 
 
-def get_total_by_month(year=None, month=None):
+def last_day_of_month(date):
+    _, last_day = calendar.monthrange(date.year, date.month)
+    return last_day
+
+
+def get_total_by_month(start_date, end_date):
+    start_period = datetime.datetime(start_date.year, start_date.month, 1).date()
+    end_period =datetime.datetime(end_date.year, end_date.month, last_day_of_month(end_date)).date()
     result = []
-    where_clause = ''
-    if year is not None:
-        where_clause = f'''where year = {year} and month = {month}'''
+    where_clause = f'''where period >= {start_period} and period <= {end_period}'''
     with sqlite3.connect(DATABASE_FILE) as conn:
         cur = conn.cursor()
         cur.execute(f'''
@@ -183,13 +187,10 @@ def get_by_hour(year=None, month=None, day=None, hour=None):
     for row in rows:
         result.append(row)
     return result
+# new
 
-
-def get_hourly(year=None, month=None, day=None):
+def data_by_hour(start_time, end_time):
     result = []
-    where_clause = ''
-    if year is not None:
-        where_clause = f'''where year = {year} and month = {month} and day = {day}'''
     with sqlite3.connect(DATABASE_FILE) as conn:
         cur = conn.cursor()
         cur.execute(f'''
@@ -203,7 +204,74 @@ def get_hourly(year=None, month=None, day=None):
                 total_cost as total_cost,
                 redelivery as redelivery 
                 from {VERBRUIK_TABLE}
-                {where_clause}''')
+                where period between '{start_time}' and '{end_time}'
+                ''')
+    rows = cur.fetchall()
+    for row in rows:
+        result.append(row)
+    return result
+
+
+def data_by_day(start_time, end_time):
+    result = []
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cur = conn.cursor()
+        cur.execute(f'''
+                select year,
+                month,
+                day,
+                sum(total_usage) as total_usage,
+                sum(total_usage_day) as total_usage_day,
+                sum(total_usage_night) as total_usage_night,
+                sum(total_cost) as total_cost,
+                sum(redelivery) as redelivery
+                from {VERBRUIK_TABLE}
+                where period between '{start_time}' and '{end_time}'
+                group by year, month, day
+                order by period''')
+    rows = cur.fetchall()
+    for row in rows:
+        result.append(row)
+    return result
+
+
+def data_by_month(start_time, end_time):
+    result = []
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cur = conn.cursor()
+        cur.execute(f'''
+                select year,
+                month,
+                sum(total_usage) as total_usage,
+                sum(total_usage_day) as total_usage_day,
+                sum(total_usage_night) as total_usage_night,
+                sum(total_cost) as total_cost,
+                sum(redelivery) as redelivery
+                from {VERBRUIK_TABLE}
+                where period between '{start_time}' and '{end_time}'
+                group by year, month
+                order by period''')
+    rows = cur.fetchall()
+    for row in rows:
+        result.append(row)
+    return result
+
+
+def data_by_year(start_time, end_time):
+    result = []
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cur = conn.cursor()
+        cur.execute(f'''
+                select year,
+                sum(total_usage) as total_usage,
+                sum(total_usage_day) as total_usage_day,
+                sum(total_usage_night) as total_usage_night,
+                sum(total_cost) as total_cost,
+                sum(redelivery) as redelivery
+                from {VERBRUIK_TABLE}
+                where period between '{start_time}' and '{end_time}'
+                group by year
+                order by period''')
     rows = cur.fetchall()
     for row in rows:
         result.append(row)

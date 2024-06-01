@@ -51,12 +51,16 @@ python3 -m pytest
 
 ## Dev todo
 
-- cmd line tool support
+done - cmd line tool support
 - reload
 - get rid of files,
 - append
-- print graphs
+done - print graphs
 - website
 - improve test-ability and test coverage
 - fix error (?) when data not yet available, warning maybe?
   done - move credentials file to a safer place
+
+Tests with mocks:
+
+https://pytest-with-eric.com/mocking/pytest-mocking/
