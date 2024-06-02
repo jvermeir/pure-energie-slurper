@@ -61,8 +61,3 @@ elif command.subcommand == 'load':
     handle_load_command(command.start_date, command.end_date)
 else:
     handle_update_command()
-
-# functions:
-# -  load new data
-# - reload
-# - get graph for a period

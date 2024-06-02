@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import requests
 
 import properties
+from database import update_data
 
 INTERVAL_LENGTH_IN_DAYS = 14
 DATA_ROOT_FOLDER = './data/'
@@ -97,4 +98,5 @@ def load_new_data(token):
         end_date = find_end_date(the_date)
         data = get_data_for_period(the_date, end_date, token)
         write_data_to_file(the_date, data)
+        update_data(data)
         the_date = the_date + timedelta(days=INTERVAL_LENGTH_IN_DAYS)

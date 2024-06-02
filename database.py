@@ -1,9 +1,9 @@
-import sqlite3
 import locale
-import re
-from calendar import calendar
-from datetime import datetime, timedelta
 import os
+import re
+import sqlite3
+from calendar import calendar
+from datetime import datetime
 from pathlib import Path
 
 VERBRUIK_TABLE = 'VERBRUIK_PER_UUR'
@@ -66,27 +66,22 @@ def float_from_string(s):
     return float(s.replace(',', '.'))
 
 
-def load_datafiles():
-    data_folder = Path(__file__).with_name('data').absolute()
-    # data_folder = Path(__file__).with_name('temp').absolute()
-    files = list(filter(lambda file: file.endswith('.csv'), sorted(os.listdir(data_folder))))
-    for file in files:
-        print(file)
-        absolute_file = os.path.join(data_folder, file)
-        with open(absolute_file, 'r') as data_file:
-            data = data_file.read().split('\n')
-            for line in data:
-                if not (line.startswith('Periode') or len(line) == 0):
-                    parts = line.split(';')
-                    parts[0] = parts[0].strip('"')
-                    key = convert_interval_to_date(parts[0])
-                    hour = key.hour
-                    day = key.day
-                    month = key.month
-                    year = key.year
-                    record = [key, parts[0], hour, day, month, year, float_from_string(parts[1]), float_from_string(parts[2]),
-                              float_from_string(parts[3]), float_from_string(parts[4]), float_from_string(parts[5])]
-                    update_row(record)
+def update_data(record_set):
+    data = record_set.split('\n')
+    for line in data:
+        if not (line.startswith('Periode') or len(line) == 0):
+            parts = line.split(';')
+            parts[0] = parts[0].strip('"')
+            key = convert_interval_to_date(parts[0])
+            hour = key.hour
+            day = key.day
+            month = key.month
+            year = key.year
+            record = [key, parts[0], hour, day, month, year, float_from_string(parts[1]),
+                      float_from_string(parts[2]),
+                      float_from_string(parts[3]), float_from_string(parts[4]), float_from_string(parts[5])]
+            update_row(record)
+
 
 
 def get_total_by_year(start_year, end_year):
@@ -116,8 +111,8 @@ def last_day_of_month(date):
 
 
 def get_total_by_month(start_date, end_date):
-    start_period = datetime.datetime(start_date.year, start_date.month, 1).date()
-    end_period =datetime.datetime(end_date.year, end_date.month, last_day_of_month(end_date)).date()
+    start_period = datetime(start_date.year, start_date.month, 1).date()
+    end_period = datetime(end_date.year, end_date.month, last_day_of_month(end_date)).date()
     result = []
     where_clause = f'''where period >= {start_period} and period <= {end_period}'''
     with sqlite3.connect(DATABASE_FILE) as conn:
@@ -187,6 +182,8 @@ def get_by_hour(year=None, month=None, day=None, hour=None):
     for row in rows:
         result.append(row)
     return result
+
+
 # new
 
 def data_by_hour(start_time, end_time):
