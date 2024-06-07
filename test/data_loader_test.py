@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
-from pathlib import Path
 
 from data_loader import should_continue, find_end_date
 
+
+# TODO: add test for database, remove data folders
 
 def test_should_continue():
     today = datetime.now().date()
