@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from data_loader import should_continue, find_end_date, find_latest_data_file_name
+from data_loader import should_continue, find_end_date
 
 
 def test_should_continue():
@@ -25,13 +25,3 @@ def test_find_end_date():
     assert (find_end_date(today), yesterday)
     assert (find_end_date(three_weeks_ago), one_week_ago)
     assert (find_end_date(one_week_ago), yesterday)
-
-
-def test_find_latest_data_file_name(mocker):
-    empty_folder = Path(__file__).parent.joinpath('emptyDataFolder')
-    mocker.patch("data_loader.DATA_ROOT_FOLDER", empty_folder.absolute())
-    assert (find_latest_data_file_name(), '2017-11-19.csv')
-    non_empty_folder = Path(__file__).parent.joinpath('nonEmptyDataFolder')
-
-    mocker.patch("data_loader.DATA_ROOT_FOLDER", non_empty_folder.absolute())
-    assert (find_latest_data_file_name(), '2024-05-27.csv')

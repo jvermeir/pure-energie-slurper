@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 
 import data_loader
 import properties
-from data_loader import DATE_FORMAT
 from database import data_by_day, data_by_month, data_by_hour, data_by_year
 
 AGGREGATION_LEVELS = ['year', 'month', 'day', 'hour']
+
 
 # TODO
 # - refactor get_total* functions

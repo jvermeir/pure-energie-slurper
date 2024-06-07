@@ -4,14 +4,9 @@ from datetime import datetime, timedelta
 
 import requests
 
+import database
 import properties
 from database import update_data
-
-INTERVAL_LENGTH_IN_DAYS = 14
-DATA_ROOT_FOLDER = './data/'
-DATE_FORMAT = '%Y-%m-%d'
-TODAY = datetime.now().date()
-YESTERDAY = TODAY - timedelta(days=1)
 
 
 def get_token():
@@ -66,22 +61,15 @@ def get_data_for_period(start_date, end_date, token):
 
 
 def write_data_to_file(start_date, data):
-    date = start_date.strftime(DATE_FORMAT)
-    with open(DATA_ROOT_FOLDER + date + '.csv', 'w') as data_file:
+    date = start_date.strftime(properties.DATE_FORMAT)
+    with open(properties.DATA_ROOT_FOLDER + date + '.csv', 'w') as data_file:
         data_file.write(data)
-
-
-def find_latest_data_file_name():
-    files = list(filter(lambda file: file.endswith('.csv'), sorted(os.listdir(DATA_ROOT_FOLDER))))
-    if len(files) == 0:
-        return datetime(2016, 11, 19).strftime(DATE_FORMAT) + '.csv'
-    return files[-1]
 
 
 def find_end_date(the_date):
     end_date = the_date + timedelta(days=14)
-    if end_date >= TODAY:
-        return YESTERDAY
+    if end_date >= properties.TODAY:
+        return properties.YESTERDAY
     return end_date
 
 
@@ -90,13 +78,13 @@ def should_continue(interval_end_date, most_recent_available_date):
 
 
 def load_new_data(token):
-    latest_file_name = find_latest_data_file_name()
-    the_date = datetime.strptime(latest_file_name.replace('.csv', ''), DATE_FORMAT).date()
+    # the_date = get_first_date()
+    the_date = database.get_latest_date()
 
-    while should_continue(the_date, YESTERDAY):
+    while should_continue(the_date, properties.YESTERDAY):
         print(the_date)
         end_date = find_end_date(the_date)
         data = get_data_for_period(the_date, end_date, token)
         write_data_to_file(the_date, data)
         update_data(data)
-        the_date = the_date + timedelta(days=INTERVAL_LENGTH_IN_DAYS)
+        the_date = the_date + timedelta(days=properties.INTERVAL_LENGTH_IN_DAYS)
