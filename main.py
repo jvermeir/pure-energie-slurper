@@ -1,7 +1,10 @@
 import argparse
 
 import data_loader
+import database
 import graph
+
+database.create_table()
 
 
 def handle_graph_command(start_date, end_date, aggregation):

@@ -1,9 +1,9 @@
 import json
-import os
 from datetime import datetime, timedelta
 
 import requests
 
+import influx
 import properties
 from database import update_data
 from dataservice import get_latest_date
@@ -86,4 +86,8 @@ def load_new_data(token):
         data = get_data_for_period(the_date, end_date, token)
         write_data_to_file(the_date, data)
         update_data(data)
+        influx.update_data(data)
         the_date = the_date + timedelta(days=properties.INTERVAL_LENGTH_IN_DAYS)
+
+# x = get_data_for_period('2024-01-01', '2024-01-10', get_token())
+# print (x)

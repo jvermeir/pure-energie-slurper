@@ -22,7 +22,6 @@ create_table_statement: str = f"""CREATE TABLE IF NOT EXISTS {VERBRUIK_TABLE} (
         )"""
 
 
-# TODO: execute this on startup?
 def create_table():
     print('create table')
     with sqlite3.connect(DATABASE_FILE) as conn:

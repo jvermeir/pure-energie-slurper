@@ -13,6 +13,10 @@ password = config['password']
 connection_id = config['connection_id']
 access_token = config['access_token']
 start_of_data = config['start_of_data']
+influx_url = config['influx_url']
+influx_token = config['influx_token']
+influx_org = config['influx_org']
+influx_bucket = config['influx_bucket']
 
 INTERVAL_LENGTH_IN_DAYS = 14
 DATA_ROOT_FOLDER = './data/'
