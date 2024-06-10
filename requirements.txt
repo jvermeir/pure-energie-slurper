@@ -3,3 +3,4 @@ pytest-mock
 requests
 matplotlib
 numpy
+influxdb-client
