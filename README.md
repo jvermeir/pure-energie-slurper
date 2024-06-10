@@ -11,7 +11,7 @@ Requirements:
 - account at Pure Energie
 
 Create a file named `pesConfig.json` (pes is short for Pure Energie Slurper) in your home folder. It's content should
-look like this:
+look like this (make sure the whole thing is on a single line. TODO: fix this madness):
 
 ```json
 {
@@ -19,7 +19,11 @@ look like this:
   "password": "YOUR PASSWORD",
   "connection_id": "YOUR CONNECTION_ID",
   "access_token": "YOUR ACCESS_TOKEN",
-  "start_of_data": "YYYY-MM-DD"
+  "start_of_data": "YYYY-MM-DD",
+  "influx_url" : "http://localhost:8086", 
+  "influx_token" : "YOUR TOKEN", 
+  "influx_org" : "YOUR ORG ID", 
+  "influx_bucket" : "verbruikbucket"
 }
 ```
 
@@ -59,30 +63,12 @@ done - print graphs
 - improve test-ability and test coverage
 - fix error (?) when data not yet available, warning maybe?
 done - move credentials file to a safer place
-- website
-  - dashboard with 7 days graph? 
-
-Tests with mocks:
-
-https://pytest-with-eric.com/mocking/pytest-mocking/
+done - website
+  - dashboard in influxdb 
 
 ## Influx
 
 Experiment with InfluxDB as a database and using its dashboard to show graphs.
-
-### Brew Install
-
-```bash
-brew update
-brew install influxdb
-brew install influxdb-cli
-```
-
-Start database
-
-```bash 
-influxd
-```
 
 ### Docker 
 
@@ -94,6 +80,8 @@ docker run -d -p 8086:8086 \
     -v "$PWD/config:/etc/influxdb2" \
     influxdb:2
 ```
+
+setup database, run this once
 
 ```bash 
 curl http://localhost:8086/api/v2/setup \
@@ -180,6 +168,8 @@ export INFLUX_ORG_ID={replace}
 export INFLUX_TOKEN={replace}
 ```
 
+### Sample curls
+
 add `get-started` bucket 
 
 ```bash 
@@ -198,6 +188,7 @@ curl --request POST \
     ]
   }'
 ```
+
 list buckets
 
 ```bash 
@@ -227,7 +218,3 @@ curl --request POST http://localhost:8086/api/v2/delete?org=$INFLUX_ORG&bucket=v
     "stop": "2261-04-11T23:47:16Z"
     }'
 ```
-
-
-Python code
-
