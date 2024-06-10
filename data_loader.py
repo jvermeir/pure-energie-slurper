@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 
 import requests
 
-import database
 import properties
 from database import update_data
+from dataservice import get_latest_date
 
 
 def get_token():
@@ -78,8 +78,7 @@ def should_continue(interval_end_date, most_recent_available_date):
 
 
 def load_new_data(token):
-    # the_date = get_first_date()
-    the_date = database.get_latest_date()
+    the_date = get_latest_date()
 
     while should_continue(the_date, properties.YESTERDAY):
         print(the_date)

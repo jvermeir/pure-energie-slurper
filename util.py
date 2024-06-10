@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from data_loader import get_token, load_new_data
-from database import convert_interval_to_date, float_from_string, update_row
+from database import convert_interval_to_date, float_from_dutch_formated_string, update_row
 
 load_new_data(get_token())
 
@@ -24,9 +24,9 @@ def load_datafiles():
                     day = key.day
                     month = key.month
                     year = key.year
-                    record = [key, parts[0], hour, day, month, year, float_from_string(parts[1]),
-                              float_from_string(parts[2]),
-                              float_from_string(parts[3]), float_from_string(parts[4]), float_from_string(parts[5])]
+                    record = [key, parts[0], hour, day, month, year, float_from_dutch_formated_string(parts[1]),
+                              float_from_dutch_formated_string(parts[2]),
+                              float_from_dutch_formated_string(parts[3]), float_from_dutch_formated_string(parts[4]), float_from_dutch_formated_string(parts[5])]
                     update_row(record)
 
 

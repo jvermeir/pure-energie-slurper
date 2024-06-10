@@ -53,13 +53,14 @@ python3 -m pytest
 
 done - cmd line tool support
 - reload
-- get rid of files,
-- append
+done - get rid of files,
+done - append
 done - print graphs
-- website
 - improve test-ability and test coverage
 - fix error (?) when data not yet available, warning maybe?
-  done - move credentials file to a safer place
+done - move credentials file to a safer place
+- website
+  - dashboard with 7 days graph? 
 
 Tests with mocks:
 

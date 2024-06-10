@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 import data_loader
 import properties
-from database import data_by_day, data_by_month, data_by_hour, data_by_year
+from dataservice import data_by_day, data_by_month, data_by_hour, data_by_year
 
 AGGREGATION_LEVELS = ['year', 'month', 'day', 'hour']
 
@@ -96,7 +96,6 @@ def graph(aggregation_level, start_date=None, end_date=None):
         graph_day(start_date, end_date)
     elif aggregation_level == 'hour':
         graph_hour(start_date, end_date)
-
 
 def graph_hour(start_date, end_date):
     verbruik_data = data_by_hour(start_date + ' 00:00:00', end_date + ' 23:59:59')

@@ -1,10 +1,8 @@
 import locale
 import re
 import sqlite3
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-
-import properties
 
 VERBRUIK_TABLE = 'VERBRUIK_PER_UUR'
 DATABASE_FILE = (Path(__file__).with_name('data').absolute() / Path('verbruiksdb.db')).as_posix()
@@ -52,7 +50,7 @@ def convert_interval_to_date(interval):
     return datetime.strptime(timestamp, '%H:%M%d %B %Y')
 
 
-def float_from_string(s):
+def float_from_dutch_formated_string(s):
     return float(s.replace(',', '.'))
 
 
@@ -67,14 +65,13 @@ def update_data(record_set):
             day = key.day
             month = key.month
             year = key.year
-            record = [key, parts[0], hour, day, month, year, float_from_string(parts[1]),
-                      float_from_string(parts[2]),
-                      float_from_string(parts[3]), float_from_string(parts[4]), float_from_string(parts[5])]
+            record = [key, parts[0], hour, day, month, year, float_from_dutch_formated_string(parts[1]),
+                      float_from_dutch_formated_string(parts[2]),
+                      float_from_dutch_formated_string(parts[3]), float_from_dutch_formated_string(parts[4]), float_from_dutch_formated_string(parts[5])]
             update_row(record)
 
 
-def data_by_hour(start_time, end_time):
-    result = []
+def get_data_by_hour(start_time, end_time):
     with sqlite3.connect(DATABASE_FILE) as conn:
         cur = conn.cursor()
         cur.execute(f'''
@@ -90,14 +87,10 @@ def data_by_hour(start_time, end_time):
                 from {VERBRUIK_TABLE}
                 where period between '{start_time}' and '{end_time}'
                 ''')
-    rows = cur.fetchall()
-    for row in rows:
-        result.append(row)
-    return result
+    return cur.fetchall()
 
 
-def data_by_day(start_time, end_time):
-    result = []
+def get_data_by_day(start_time, end_time):
     with sqlite3.connect(DATABASE_FILE) as conn:
         cur = conn.cursor()
         cur.execute(f'''
@@ -113,14 +106,10 @@ def data_by_day(start_time, end_time):
                 where period between '{start_time}' and '{end_time}'
                 group by year, month, day
                 order by period''')
-    rows = cur.fetchall()
-    for row in rows:
-        result.append(row)
-    return result
+    return cur.fetchall()
 
 
-def data_by_month(start_time, end_time):
-    result = []
+def get_data_by_month(start_time, end_time):
     with sqlite3.connect(DATABASE_FILE) as conn:
         cur = conn.cursor()
         cur.execute(f'''
@@ -135,14 +124,10 @@ def data_by_month(start_time, end_time):
                 where period between '{start_time}' and '{end_time}'
                 group by year, month
                 order by period''')
-    rows = cur.fetchall()
-    for row in rows:
-        result.append(row)
-    return result
+    return cur.fetchall()
 
 
-def data_by_year(start_time, end_time):
-    result = []
+def get_data_by_year(end_time, start_time):
     with sqlite3.connect(DATABASE_FILE) as conn:
         cur = conn.cursor()
         cur.execute(f'''
@@ -156,25 +141,14 @@ def data_by_year(start_time, end_time):
                 where period between '{start_time}' and '{end_time}'
                 group by year
                 order by period''')
-    rows = cur.fetchall()
-    for row in rows:
-        result.append(row)
-    return result
+    return cur.fetchall()
 
 
-def get_latest_date():
-    date = datetime.strptime(properties.start_of_data, properties.DATE_FORMAT).date()
+def get_latest_date_from_db():
     with sqlite3.connect(DATABASE_FILE) as conn:
         cur = conn.cursor()
         cur.execute(f'''
                 select max(period) max_period
                 from {VERBRUIK_TABLE}
                 where total_usage > 0''')
-        result = cur.fetchone()
-        if result is not None:
-            # TODO: this would be the latest date for which we've got non-0 data in the database.
-            # we're reading this data again when renewing to make sure the query returns data for at least one day
-            # the api throws an exception if you ask for data that doesn't exist (argh!)
-            max_period, = result
-            date = datetime.strptime(str.split(max_period,' ')[0], properties.DATE_FORMAT).date()
-    return date
+        return cur.fetchone()
