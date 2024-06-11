@@ -60,4 +60,4 @@ def update_data(record_set):
                       float_from_dutch_formated_string(parts[3]), float_from_dutch_formated_string(parts[4]),
                       float_from_dutch_formated_string(parts[5])]
             influx_record = create_influx_record(record)
-            IC.write_data(influx_record, write_option=ASYNCHRONOUS)
+            IC.write_data(influx_record, write_option=SYNCHRONOUS)

@@ -73,6 +73,7 @@ Experiment with InfluxDB as a database and using its dashboard to show graphs.
 ### Docker 
 
 see https://hub.docker.com/_/influxdb/
+and https://docs.influxdata.com/influxdb/cloud/get-started/
 
 ```bash
 docker run -d -p 8086:8086 \
@@ -80,6 +81,7 @@ docker run -d -p 8086:8086 \
     -v "$PWD/config:/etc/influxdb2" \
     influxdb:2
 ```
+
 
 setup database, run this once
 

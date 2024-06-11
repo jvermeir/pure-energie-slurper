@@ -2,7 +2,6 @@ from datetime import datetime, date
 
 import matplotlib.pyplot as plt
 
-import data_loader
 import properties
 from dataservice import data_by_day, data_by_month, data_by_hour, data_by_year
 
@@ -74,7 +73,7 @@ def get_months(verbruik_data):
 
 
 def get_default_first_day():
-    return datetime.strptime(properties.start_of_data, DATE_FORMAT).date()
+    return datetime.strptime(properties.start_of_data, properties.DATE_FORMAT).date()
 
 
 def get_first_year_in_data():
@@ -86,7 +85,7 @@ def graph(aggregation_level, start_date=None, end_date=None):
     if start_date is None:
         start_date = get_default_first_day()
     if end_date is None:
-        end_date = data_loader.YESTERDAY
+        end_date = properties.YESTERDAY
 
     if aggregation_level == 'year':
         graph_year(start_date, end_date)

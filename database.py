@@ -23,7 +23,6 @@ create_table_statement: str = f"""CREATE TABLE IF NOT EXISTS {VERBRUIK_TABLE} (
 
 
 def create_table():
-    print('create table')
     with sqlite3.connect(DATABASE_FILE) as conn:
         cursor = conn.cursor()
         cursor.execute(create_table_statement)

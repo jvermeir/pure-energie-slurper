@@ -77,8 +77,11 @@ def should_continue(interval_end_date, most_recent_available_date):
     return interval_end_date <= most_recent_available_date
 
 
-def load_new_data(token):
-    the_date = get_latest_date()
+def load_new_data(token, start_date=None):
+    if start_date is None:
+        the_date = get_latest_date()
+    else:
+        the_date = datetime.strptime(start_date, properties.DATE_FORMAT).date()
 
     while should_continue(the_date, properties.YESTERDAY):
         print(the_date)
@@ -88,6 +91,3 @@ def load_new_data(token):
         update_data(data)
         influx.update_data(data)
         the_date = the_date + timedelta(days=properties.INTERVAL_LENGTH_IN_DAYS)
-
-# x = get_data_for_period('2024-01-01', '2024-01-10', get_token())
-# print (x)

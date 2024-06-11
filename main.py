@@ -15,11 +15,12 @@ def handle_graph_command(start_date, end_date, aggregation):
 
 def handle_load_command(start_date, end_date):
     print(f'{start_date}, {end_date}')
+    # TODO: implement?
 
 
-def handle_update_command():
+def handle_update_command(start_date = None):
     print('Received update command, loading new data.')
-    data_loader.load_new_data(data_loader.get_token())
+    data_loader.load_new_data(data_loader.get_token(), start_date)
 
 
 parser = argparse.ArgumentParser()
@@ -56,11 +57,18 @@ print_graph_parser.add_argument('--aggregation',
                                 )
 
 update_parameter = subparsers.add_parser('update', help='load new data')
+update_parameter.add_argument('--start_date',
+                              type=str,
+                              help='Date to start updating from',
+                              required=False
+                              )
 
 command = parser.parse_args()
 if command.subcommand == 'graph':
     handle_graph_command(command.start_date, command.end_date, command.aggregation)
 elif command.subcommand == 'load':
     handle_load_command(command.start_date, command.end_date)
+elif command.subcommand == 'update':
+    handle_update_command(command.start_date)
 else:
-    handle_update_command()
+    print(f'unknown command {command.subcommand}')
