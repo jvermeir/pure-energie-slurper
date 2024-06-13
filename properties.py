@@ -5,7 +5,7 @@ from pathlib import Path
 properties_file = Path.home() / Path("pesConfig.json")
 
 with open(properties_file, 'r') as file:
-    properties_as_text = file.readline()
+    properties_as_text = file.read()
     config = json.loads(properties_as_text)
 
 email = config['email']
@@ -17,6 +17,7 @@ influx_url = config['influx_url']
 influx_token = config['influx_token']
 influx_org = config['influx_org']
 influx_bucket = config['influx_bucket']
+influx_enabled = config['influx_enabled']
 
 INTERVAL_LENGTH_IN_DAYS = 14
 DATA_ROOT_FOLDER = './data/'

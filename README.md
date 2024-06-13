@@ -11,7 +11,7 @@ Requirements:
 - account at Pure Energie
 
 Create a file named `pesConfig.json` (pes is short for Pure Energie Slurper) in your home folder. It's content should
-look like this (make sure the whole thing is on a single line. TODO: fix this madness):
+look like this:
 
 ```json
 {
@@ -23,16 +23,17 @@ look like this (make sure the whole thing is on a single line. TODO: fix this ma
   "influx_url" : "http://localhost:8086", 
   "influx_token" : "YOUR TOKEN", 
   "influx_org" : "YOUR ORG ID", 
-  "influx_bucket" : "verbruikbucket"
+  "influx_bucket" : "verbruikbucket",
+  "influx_enabled": false
 }
 ```
 
-`email` and `password` are the credentials you use to log in.
+`email` and `password` are the credentials you use to log in at Pure Engerie.
 
 Get the values for connection_id and access_token from the browser's network inspector.
 `connection_id` is part of the url and `access_token` is actually named `X-token` and is returned as a header.
 
-`start_of_date` is the date of the first measurements in your account.
+`start_of_data` is the date of the first measurements in your account.
 
 ```bash
 python3 -m venv .venv
@@ -70,10 +71,14 @@ done - website
 
 Experiment with InfluxDB as a database and using its dashboard to show graphs.
 
+Note: use the 'influx_enabled' property to enable or disable influx.
+
 ### Docker 
 
 see https://hub.docker.com/_/influxdb/
 and https://docs.influxdata.com/influxdb/cloud/get-started/
+
+Run influx container or influx/grafana using [docker compose](./docker/docker-compose.yml)  
 
 ```bash
 docker run -d -p 8086:8086 \
@@ -81,7 +86,6 @@ docker run -d -p 8086:8086 \
     -v "$PWD/config:/etc/influxdb2" \
     influxdb:2
 ```
-
 
 setup database, run this once
 

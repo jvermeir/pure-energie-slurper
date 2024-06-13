@@ -89,5 +89,6 @@ def load_new_data(token, start_date=None):
         data = get_data_for_period(the_date, end_date, token)
         write_data_to_file(the_date, data)
         update_data(data)
-        influx.update_data(data)
+        if properties.influx_enabled:
+            influx.update_data(data)
         the_date = the_date + timedelta(days=properties.INTERVAL_LENGTH_IN_DAYS)
