@@ -14,7 +14,7 @@ def load_datafiles():
         with open(absolute_file, 'r') as data_file:
             data = data_file.read()
             update_data(data)
-            influx.update_data(data)
+            # influx.update_data(data)
 
 
 # load_new_data(get_token())

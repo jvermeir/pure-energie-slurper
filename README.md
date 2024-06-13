@@ -34,6 +34,12 @@ Get the values for connection_id and access_token from the browser's network ins
 
 `start_of_date` is the date of the first measurements in your account.
 
+When using postgres, install on osx, so we get a client 
+
+```bash
+brew install postgresql
+```
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -44,8 +50,7 @@ pip3 install -r requirements.txt
 
 TODO
 
-- Run in the afternoon because that's when yesterday's data becomes available. If run too early, the code will fail (
-  TODO: fix this)
+- Run in the afternoon because that's when yesterday's data becomes available. If run too early, the code will fail (TODO: fix this)
 
 ## Test
 
@@ -64,7 +69,9 @@ done - print graphs
 - fix error (?) when data not yet available, warning maybe?
 done - move credentials file to a safer place
 done - website
-  - dashboard in influxdb 
+  - dashboard in influxdb/graphana? 
+- fix help for commandline options 
+- make influx optional
 
 ## Influx
 
@@ -81,7 +88,6 @@ docker run -d -p 8086:8086 \
     -v "$PWD/config:/etc/influxdb2" \
     influxdb:2
 ```
-
 
 setup database, run this once
 
@@ -220,3 +226,16 @@ curl --request POST http://localhost:8086/api/v2/delete?org=$INFLUX_ORG&bucket=v
     "stop": "2261-04-11T23:47:16Z"
     }'
 ```
+
+## Influx and Grafana
+
+see git@github.com:jkehres/docker-compose-influxdb-grafana.git
+
+removed chronograph
+
+connect grafana to influx in container:
+
+host: http://influxdb:8086
+add header:
+  name: Authorization
+  value: Token <influx_token>

@@ -4,3 +4,5 @@ requests
 matplotlib
 numpy
 influxdb-client
+psycopg2-binary
+

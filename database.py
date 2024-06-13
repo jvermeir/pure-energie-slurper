@@ -1,11 +1,11 @@
 import locale
 import re
-import sqlite3
+import psycopg2
 from datetime import datetime
-from pathlib import Path
 
-VERBRUIK_TABLE = 'VERBRUIK_PER_UUR'
-DATABASE_FILE = (Path(__file__).with_name('data').absolute() / Path('verbruiksdb.db')).as_posix()
+import properties
+
+VERBRUIK_TABLE = 'VERBRUIK_DATA'
 
 create_table_statement: str = f"""CREATE TABLE IF NOT EXISTS {VERBRUIK_TABLE} (
                 period TEXT PRIMARY KEY, 
@@ -22,20 +22,34 @@ create_table_statement: str = f"""CREATE TABLE IF NOT EXISTS {VERBRUIK_TABLE} (
         )"""
 
 
+def connect():
+    conn = psycopg2.connect(
+        host=properties.pg_host,
+        database=properties.pg_database,
+        user=properties.pg_user,
+        password=properties.pg_password
+    )
+    return conn
+
+
 def create_table():
-    with sqlite3.connect(DATABASE_FILE) as conn:
+    with connect() as conn:
         cursor = conn.cursor()
         cursor.execute(create_table_statement)
         conn.commit()
 
 
 def update_row(verbruik_per_uur):
-    sql = f'''REPLACE INTO {VERBRUIK_TABLE} (
+    sql = f'''INSERt INTO {VERBRUIK_TABLE} (
          period, period_as_string, hour, day, month, year, total_usage, total_usage_day, total_usage_night, total_cost, redelivery)
-                  VALUES(?,?,?,   ?, ?, ?,   ?, ?, ?,   ?, ?) 
+                  VALUES(%s,%s,%s,   %s, %s, %s,   %s, %s, %s,   %s, %s)
+                  ON CONFLICT(period) 
+                    DO UPDATE SET
+                    (period_as_string, hour, day, month, year, total_usage, total_usage_day, total_usage_night, total_cost, redelivery)
+                     = (EXCLUDED.period_as_string, EXCLUDED.hour, EXCLUDED.day, EXCLUDED.month, EXCLUDED.year, EXCLUDED.total_usage, EXCLUDED.total_usage_day, EXCLUDED.total_usage_night, EXCLUDED.total_cost, EXCLUDED.redelivery)
                   '''
 
-    with sqlite3.connect(DATABASE_FILE) as conn:
+    with connect() as conn:
         cur = conn.cursor()
         cur.execute(sql, verbruik_per_uur)
         conn.commit()
@@ -70,7 +84,7 @@ def update_data(record_set):
 
 
 def get_data_by_hour(start_time, end_time):
-    with sqlite3.connect(DATABASE_FILE) as conn:
+    with connect() as conn:
         cur = conn.cursor()
         cur.execute(f'''
                 select year,
@@ -89,7 +103,7 @@ def get_data_by_hour(start_time, end_time):
 
 
 def get_data_by_day(start_time, end_time):
-    with sqlite3.connect(DATABASE_FILE) as conn:
+    with connect() as conn:
         cur = conn.cursor()
         cur.execute(f'''
                 select year,
@@ -108,7 +122,7 @@ def get_data_by_day(start_time, end_time):
 
 
 def get_data_by_month(start_time, end_time):
-    with sqlite3.connect(DATABASE_FILE) as conn:
+    with connect() as conn:
         cur = conn.cursor()
         cur.execute(f'''
                 select year,
@@ -126,7 +140,7 @@ def get_data_by_month(start_time, end_time):
 
 
 def get_data_by_year(end_time, start_time):
-    with sqlite3.connect(DATABASE_FILE) as conn:
+    with connect() as conn:
         cur = conn.cursor()
         cur.execute(f'''
                 select year,
@@ -143,7 +157,7 @@ def get_data_by_year(end_time, start_time):
 
 
 def get_latest_date_from_db():
-    with sqlite3.connect(DATABASE_FILE) as conn:
+    with connect() as conn:
         cur = conn.cursor()
         cur.execute(f'''
                 select max(period) max_period
