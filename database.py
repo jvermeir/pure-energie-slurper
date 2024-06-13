@@ -40,7 +40,7 @@ def create_table():
 
 
 def update_row(verbruik_per_uur):
-    sql = f'''INSERt INTO {VERBRUIK_TABLE} (
+    sql = f'''INSERT INTO {VERBRUIK_TABLE} (
          period, period_as_string, hour, day, month, year, total_usage, total_usage_day, total_usage_night, total_cost, redelivery)
                   VALUES(%s,%s,%s,   %s, %s, %s,   %s, %s, %s,   %s, %s)
                   ON CONFLICT(period) 

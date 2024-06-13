@@ -11,7 +11,7 @@ Requirements:
 - account at Pure Energie
 
 Create a file named `pesConfig.json` (pes is short for Pure Energie Slurper) in your home folder. It's content should
-look like this (make sure the whole thing is on a single line. TODO: fix this madness):
+look like this:
 
 ```json
 {
@@ -23,22 +23,23 @@ look like this (make sure the whole thing is on a single line. TODO: fix this ma
   "influx_url" : "http://localhost:8086", 
   "influx_token" : "YOUR TOKEN", 
   "influx_org" : "YOUR ORG ID", 
-  "influx_bucket" : "verbruikbucket"
+  "influx_bucket" : "verbruikbucket",
+  "pg_host": "localhost",
+  "pg_database": "verbruik",
+  "pg_user": "verbruik",
+  "pg_password": "PASSWORD FOR VERBRUIK ACCOUNT"
+
 }
 ```
 
-`email` and `password` are the credentials you use to log in.
+`email` and `password` are the credentials you use to log in at Pure Energie.
 
 Get the values for connection_id and access_token from the browser's network inspector.
 `connection_id` is part of the url and `access_token` is actually named `X-token` and is returned as a header.
 
 `start_of_date` is the date of the first measurements in your account.
 
-When using postgres, install on osx, so we get a client 
-
-```bash
-brew install postgresql
-```
+When using postgres, see below.
 
 ```bash
 python3 -m venv .venv
@@ -227,15 +228,31 @@ curl --request POST http://localhost:8086/api/v2/delete?org=$INFLUX_ORG&bucket=v
     }'
 ```
 
-## Influx and Grafana
+## Influx, Postgres and Grafana
 
-see git@github.com:jkehres/docker-compose-influxdb-grafana.git
+### Postgres
 
-removed chronograph
+Install on osx, so we get a client
 
-connect grafana to influx in container:
+```bash
+brew install postgresql
+```
 
-host: http://influxdb:8086
-add header:
-  name: Authorization
-  value: Token <influx_token>
+Then start docker-compose with Postgres and Grafana (this compose file was adapted from https://github.com/jkehres/docker-compose-influxdb-grafana):
+
+```bash
+cd docker
+docker-compose up
+```
+
+and configure a user account for Postgres
+
+```bash
+create user verbruik with password '<password goes here>';
+create database verbruik;
+grant all priviliges on database verbruik to verbruik;
+```
+
+### Influx
+
+...
