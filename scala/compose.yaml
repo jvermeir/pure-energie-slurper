@@ -1,0 +1,15 @@
+services:
+  mysql:
+    container_name: 'mysql_verbruik'
+    image: 'mysql:latest'
+    volumes:
+      - verbruik_db:/var/lib/mysql
+    environment:
+      - 'MYSQL_DATABASE=verbruik'
+      - 'MYSQL_PASSWORD=verbruik'
+      - 'MYSQL_ROOT_PASSWORD=verbruik'
+      - 'MYSQL_USER=verbruik'
+    ports:
+      - '3306:3306'
+volumes:
+  verbruik_db:
