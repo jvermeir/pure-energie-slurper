@@ -1,6 +1,6 @@
 package nl.vermeir.scala.service
 
-import nl.vermeir.scala.Fixture.{MockPESReader, MockPESRepository, drop, recreate}
+import nl.vermeir.scala.{MockPESReader, MockPESRepository}
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
@@ -14,9 +14,6 @@ class PESServiceTest extends AnyFunSuite with Matchers with BeforeAndAfter {
 
   val mockReader = new MockPESReader()
   val mockPESRepository = new MockPESRepository()
-
-  before(recreate())
-  after(drop())
 
   test("read data for a 15 day period from service") {
     val service = new PESService(mockReader, mockPESRepository)

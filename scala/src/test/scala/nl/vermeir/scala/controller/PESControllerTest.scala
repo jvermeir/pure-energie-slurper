@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, MediaType
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.util.ByteString
 import com.github.nscala_time.time.Imports.DateTime
-import nl.vermeir.scala.Fixture.{MockPESReader, MockPESRepository, drop, recreate}
+import nl.vermeir.scala.{MockPESReader, MockPESRepository}
 import nl.vermeir.scala.service.PESService
 import org.scalatest.BeforeAndAfter
 import org.scalatest.matchers.should.Matchers
@@ -15,9 +15,6 @@ import spray.json._
 class PESControllerTest extends AnyWordSpec with Matchers with ScalatestRouteTest with BeforeAndAfter {
 
   scalikejdbc.config.DBs.setupAll()
-
-  before(recreate())
-  after(drop())
 
   implicit object DateTimeJsonFormat extends RootJsonFormat[DateTime] {
     def write(dateTime: DateTime): JsString = JsString(dateTime.toString)
