@@ -29,6 +29,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+  "mysql" % "mysql-connector-java" % "8.0.33",
   "org.scalikejdbc" %% "scalikejdbc" % "4.2.1",
   "org.scalikejdbc" %% "scalikejdbc-config" % "4.2.1",
   "com.github.nscala-time" %% "nscala-time" % "2.32.0",
