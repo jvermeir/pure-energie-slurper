@@ -11,7 +11,7 @@ import nl.vermeir.scala.repository.{PESReader, PESRepository}
 import org.joda.time.Days
 
 import java.util.concurrent.TimeUnit
-import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
+import scala.collection.parallel.CollectionConverters.ImmutableIterableIsParallelizable
 import scala.concurrent.{Await, Future}
 
 class PESService(val pesReader: PESReader, val pesRepository: PESRepository) {
@@ -61,9 +61,7 @@ class PESService(val pesReader: PESReader, val pesRepository: PESRepository) {
     val endOfPeriod = minDate(endDate, DateTime.now().minusDays(1))
     val days: Int = Days.daysBetween(startDate, endDate).getDays
     val numberOfDaysUpdated = (0 to days by 14).to(LazyList)
-      .map(i => {
-        updateDataForInterval(startDate.plusDays(i), endOfPeriod, token)
-      })
+      .map(i => updateDataForInterval(startDate.plusDays(i), endOfPeriod, token))
       .sum
 
     logger.info(s"updated $numberOfDaysUpdated records")
@@ -79,12 +77,12 @@ class PESService(val pesReader: PESReader, val pesRepository: PESRepository) {
     val endOfPeriod = minDate(endDate, DateTime.now().minusDays(1))
     val days: Int = Days.daysBetween(startDate, endDate).getDays
 
-    val data = (0 to days by 14).toArray.par
-// TODO: why is this ignored? data.tasksupport = new ForkJoinTaskSupport(new ForkJoinPool(2))
+    // TODO: why is this ignored? data.tasksupport = new ForkJoinTaskSupport(new ForkJoinPool(2))
     val numberOfDaysUpdated =
-      data
-      .map(i => updateDataForInterval(startDate.plusDays(i), endOfPeriod, token))
-      .sum
+      (0 to days by 14).to(LazyList)
+        .par
+        .map(i => updateDataForInterval(startDate.plusDays(i), endOfPeriod, token))
+        .sum
 
     logger.info(s"updated $numberOfDaysUpdated records")
     val updateResult = UpdateResult("200", numberOfDaysUpdated)
@@ -122,7 +120,7 @@ class PESService(val pesReader: PESReader, val pesRepository: PESRepository) {
     }
 
     val processedJobs: Source[Result, NotUsed] = data.via(balancer(worker, 3))
-    val updateCounts = Await.result(processedJobs.limit(10).runWith(Sink.seq), scala.concurrent.duration.Duration(50, TimeUnit.SECONDS))
+    val updateCounts = Await.result(processedJobs.runWith(Sink.seq), scala.concurrent.duration.Duration(50, TimeUnit.SECONDS))
     val updateResult = UpdateResult("200", updateCounts.sum)
 
     Future {
