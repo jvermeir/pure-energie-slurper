@@ -48,13 +48,11 @@ class PESReaderImpl extends PESReader {
       .body
   }
 
-  private def getToken(response: String) = {
+  private def getToken(data: String) = {
     final case class AccessToken(access_token: String)
     implicit val accessTokenFormat: RootJsonFormat[AccessToken] = jsonFormat1(AccessToken.apply)
 
-    val data: String = response
-    val jsonAst = data.parseJson
-    val token = jsonAst.convertTo[AccessToken]
+    val token = data.parseJson.convertTo[AccessToken]
     token.access_token
   }
 

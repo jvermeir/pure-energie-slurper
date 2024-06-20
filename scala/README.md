@@ -82,10 +82,16 @@ create table verbruik_per_uur
 
 ## Test REST interface
 
-update data from Pure Engergie site for January 2017
+update data from Pure Energie site for January 2017
 
 ```bash
 curl -v -d '{"startDate":"2017-01-01", "endDate": "2017-02-01"}' \
 -H 'Content-Type: application/json' \
 -X POST localhost:8080/refresh
+```
+
+load data
+
+```bash
+curl -v  -H 'Content-Type: application/json' localhost:8080/verbruik/2017-02-01/2017-02-02
 ```
