@@ -10,12 +10,15 @@ import nl.vermeir.scala.service.PESService
 import spray.json.DefaultJsonProtocol._
 import spray.json.{JsString, JsValue, RootJsonFormat, deserializationError}
 
-final case class UpdateRequest(startDate: Option[String] = None, endDate: Option[String] = None)
+final case class UpdateRequest(startDate: Option[String] = None, endDate: Option[String] = None, method: String = "par")
+
 final case class ReadDataResult(result: List[PESData])
+
 final case class UpdateResult(status: String, updatedRecords: Int)
+
 final case class PESData(period: DateTime, total_usage: Float, redelivery: Float)
 
-class PESController(pesReader: PESReader, pesRepository : PESRepository) {
+class PESController(pesReader: PESReader, pesRepository: PESRepository) {
 
   implicit object DateTimeJsonFormat extends RootJsonFormat[DateTime] {
     def write(dateTime: DateTime): JsString = JsString(dateTime.toString)
@@ -26,20 +29,20 @@ class PESController(pesReader: PESReader, pesRepository : PESRepository) {
     }
   }
 
-  implicit val updateRequestFormat: RootJsonFormat[UpdateRequest] = jsonFormat2(UpdateRequest.apply)
+  implicit val updateRequestFormat: RootJsonFormat[UpdateRequest] = jsonFormat3(UpdateRequest.apply)
   implicit val updateResultFormat: RootJsonFormat[UpdateResult] = jsonFormat2(UpdateResult.apply)
   implicit val pesDataFormat: RootJsonFormat[PESData] = jsonFormat3(PESData.apply)
   implicit val readVerbruikFormat: RootJsonFormat[ReadDataResult] = jsonFormat1(ReadDataResult.apply)
 
   private def getStartDate(startDate: Option[String]): DateTime = {
     println(s"$startDate startdate")
-    DateTime.parse(startDate.getOrElse(PESConfig.conf.getString("start_of_data")),DateTimeFormat.forPattern("yyyy-MM-dd"))
+    DateTime.parse(startDate.getOrElse(PESConfig.conf.getString("start_of_data")), DateTimeFormat.forPattern("yyyy-MM-dd"))
   }
 
   private def getEndDate(endDate: Option[String]): DateTime = {
     println(s"$endDate enddate")
     lazy val yesterday = DateTimeFormat.forPattern("yyyy-MM-dd").print(DateTime.yesterday())
-    DateTime.parse(endDate.getOrElse(yesterday),DateTimeFormat.forPattern("yyyy-MM-dd"))
+    DateTime.parse(endDate.getOrElse(yesterday), DateTimeFormat.forPattern("yyyy-MM-dd"))
   }
 
   val route: Route =
@@ -67,7 +70,12 @@ class PESController(pesReader: PESReader, pesRepository : PESRepository) {
           val startDate = getStartDate(updateRequest.startDate)
           val endDate = getEndDate(updateRequest.endDate)
 
-          val result = new PESService(pesReader, pesRepository).update(startDate, endDate)
+          val result = updateRequest.method match {
+            case "par" => new PESService(pesReader, pesRepository).updatePar(startDate, endDate)
+            case "stream" => new PESService(pesReader, pesRepository).update(startDate, endDate)
+            case "actors" => new PESService(pesReader, pesRepository).updateActors(startDate, endDate)
+            case _ => new PESService(pesReader, pesRepository).updateImperativeVersion(startDate, endDate)
+          }
           onSuccess(result) { _ => complete(result) }
         }
       }

@@ -31,6 +31,7 @@ class PESControllerTest extends AnyWordSpec with Matchers with ScalatestRouteTes
     s"""{
        |"startDate":"2024-05-01"
        |, "endDate": "2024-06-01"
+       |, "method": "default"
        |}
        |""".stripMargin
   )

@@ -14,7 +14,7 @@ object PESConfig {
 }
 
 object App {
-  implicit val system: ActorSystem[_] = ActorSystem(Behaviors.empty, "ScalaCustomerService")
+  implicit val system: ActorSystem[_] = ActorSystem(Behaviors.empty, "PESActorSystem")
   implicit val executionContext: ExecutionContext = system.executionContext
 
   val pesReader = new PESReaderImpl()
