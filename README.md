@@ -224,3 +224,11 @@ curl --request POST http://localhost:8086/api/v2/delete?org=$INFLUX_ORG&bucket=v
     "stop": "2261-04-11T23:47:16Z"
     }'
 ```
+
+## D3
+
+line chart:
+
+  https://blog.stackademic.com/creating-line-charts-using-d3-js-module-and-react-953b40a82232
+
+  https://tomhazledine.com/line-graphs-with-react-svg-d3/
