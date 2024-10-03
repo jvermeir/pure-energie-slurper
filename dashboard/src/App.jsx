@@ -45,16 +45,6 @@ function App() {
 
     if (loading) return <div>Loading...</div>;
 
-    const theData = {
-        data: [
-            {date: "2024-01-01", totalUsage: 10, redelivery: 21},
-            {date: "2024-01-02", totalUsage: 50, redelivery: 22},
-            {date: "2024-01-03", totalUsage: 10, redelivery: 23},
-            {date: "2024-01-04", totalUsage: 30, redelivery: 24},
-            {date: "2024-01-05", totalUsage: 12, redelivery: 25},
-        ]
-    }
-
     return (
         <div className="dashboard">
             <div className="wrapper">
@@ -76,3 +66,16 @@ function App() {
 }
 
 export default App;
+
+/*
+1.
+
+select year/month/day/hour
+select 1st timestamp and last timestamp
+show graph
+
+2.
+
+
+
+ */
